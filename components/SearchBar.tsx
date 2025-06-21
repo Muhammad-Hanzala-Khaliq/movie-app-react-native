@@ -5,8 +5,8 @@ import { icons } from '@/constants/icons'
 interface Props {
   placeholder: string;
   onPress?: () => void;
-  value: string;
-  onChangeText: (text: string) => void;
+  value?: string;
+  onChangeText?: (text: string) => void;
 }
 
 const SearchBar = ({ placeholder, onPress, value, onChangeText }: Props) => {
@@ -25,6 +25,10 @@ const SearchBar = ({ placeholder, onPress, value, onChangeText }: Props) => {
         onChangeText={onChangeText}
         placeholderTextColor="#a8b5db"
         className="flex-1 ml-2 text-white"
+        style={{
+          borderWidth: 0, // ✅ removes border
+          outlineWidth: 0, // ✅ removes focus outline on web
+        }}
       />
     </View>
   );
