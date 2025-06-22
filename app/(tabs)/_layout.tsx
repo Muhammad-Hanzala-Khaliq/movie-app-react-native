@@ -8,7 +8,7 @@ const TabIcon = ({ focused, icon, title }: any) => {
     return (
       <ImageBackground
         source={images.highlight}
-        className="flex flex-row w-full flex-1 min-w-[112px] min-h-16 mt-4 justify-center items-center rounded-full overflow-hidden"
+        className="flex flex-row w-full flex-1 min-w-[112px] min-h-12 mt-4 justify-center items-center rounded-full overflow-hidden"
       >
         <Image source={icon} tintColor="#151312" className="size-5" />
         <Text className="text-secondary text-base font-semibold ml-2">
@@ -37,13 +37,15 @@ const _layout = () => {
         tabBarStyle: {
           backgroundColor: "#0f0D23",
           borderRadius: 50,
-          marginHorizontal: 20,
+          marginHorizontal: 10,
           marginBottom: 36,
-          height: 52,
+          height: 60,
           position: "absolute",
           overflow: "hidden",
           borderWidth: 1,
           borderColor: "#0f0d23",
+          paddingLeft: 20,
+          paddingRight: 20,
         },
       }}
     >
