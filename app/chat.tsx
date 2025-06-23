@@ -1,54 +1,78 @@
 // app/chat.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { getMovieSuggestion } from '@/services/gemini'; // custom logic
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Image,
+} from "react-native";
+import { getMovieSuggestion } from "@/services/gemini"; // custom logic
+import { router } from "expo-router";
+import { icons } from "@/constants/icons";
 
 export default function ChatScreen() {
-  const [messages, setMessages] = useState([{ from: 'bot', text: 'Hi! Ask me for movie recommendations.' }]);
-  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([
+    { from: "bot", text: "Hi! Ask me for movie recommendations." },
+  ]);
+  const [input, setInput] = useState("");
 
   const handleSend = async () => {
-  if (!input.trim()) return;
+    if (!input.trim()) return;
 
-  const userMsg = { from: 'user', text: input };
-  setMessages((prev) => [...prev, userMsg]);
-  setInput('');
+    const userMsg = { from: "user", text: input };
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
 
-  // Add empty bot message first for streaming
-  setMessages((prev) => [...prev, { from: 'bot', text: '' }]);
+    // Add empty bot message first for streaming
+    setMessages((prev) => [...prev, { from: "bot", text: "" }]);
 
-  try {
-    const reply = await getMovieSuggestion(input);
+    try {
+      const reply = await getMovieSuggestion(input);
 
-    let index = 0;
-    const typingInterval = setInterval(() => {
-      if (index <= reply.length) {
-        const partial = reply.slice(0, index++);
-        setMessages((prev) => {
-          const updated = [...prev];
-          updated[updated.length - 1] = { from: 'bot', text: partial };
-          return updated;
-        });
-      } else {
-        clearInterval(typingInterval);
-      }
-    }, 20); // adjust speed (ms per character)
-
-  } catch (err) {
-    setMessages((prev) => [
-      ...prev.slice(0, -1),
-      { from: 'bot', text: 'Sorry, I had trouble fetching a recommendation.' },
-    ]);
-  }
-};
-
+      let index = 0;
+      const typingInterval = setInterval(() => {
+        if (index <= reply.length) {
+          const partial = reply.slice(0, index++);
+          setMessages((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = { from: "bot", text: partial };
+            return updated;
+          });
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, 20); // adjust speed (ms per character)
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev.slice(0, -1),
+        {
+          from: "bot",
+          text: "Sorry, I had trouble fetching a recommendation.",
+        },
+      ]);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.chat} contentContainerStyle={styles.chatContent}  showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.chat}
+        contentContainerStyle={styles.chatContent}
+        showsVerticalScrollIndicator={false}
+      >
         {messages.map((msg, i) => (
-          <View key={i} style={msg.from === 'user' ? styles.userContainer : styles.botContainer}>
-            <Text style={msg.from === 'user' ? styles.userText : styles.botText}>
+          <View
+            key={i}
+            style={
+              msg.from === "user" ? styles.userContainer : styles.botContainer
+            }
+          >
+            <Text
+              style={msg.from === "user" ? styles.userText : styles.botText}
+            >
               {msg.text}
             </Text>
           </View>
@@ -66,6 +90,17 @@ export default function ChatScreen() {
         <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
           <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
+        {/* <TouchableOpacity
+          className="absolute bottom-5 left-0 right-0 mx-5 bg-purple-500 rounded-lg py-3.5 flex flex-row items-center justify-center z-50 "
+          onPress={router.back}
+        >
+          <Image
+            source={icons.arrow}
+            className="size-5 mr-1 mt-0.5 rotate-180"
+            tintColor="#fff"
+          />
+          <Text className="text-white font-semibold text-base">Go Back</Text>
+        </TouchableOpacity> */}
       </View>
     </View>
   );

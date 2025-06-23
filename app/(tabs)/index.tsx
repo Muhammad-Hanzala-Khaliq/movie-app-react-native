@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+// import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import useFetch from "@/services/useFetch";
 import { FlatList } from "react-native-gesture-handler";
@@ -18,6 +18,7 @@ import MovieCard from "@/components/MovieCard";
 import { getTrendingMovies } from "@/services/appwrite";
 import TrendingCard from "@/components/TrendingCard";
 import robot from "@/assets/images/robot.png"; // Ensure you have a chat icon in your icons folder
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function Index() {
   const router = useRouter();
@@ -68,20 +69,20 @@ export default function Index() {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 ItemSeparatorComponent={() => <View className="w-4" />}
-                className="mb-4 mt-3 "
+                className="mb-4 mt-3"
                 data={trendingMovies}
                 renderItem={({ item, index }) => (
                   <TrendingCard movie={item} index={index} />
                 )}
-                keyExtractor={(item) => item.movie_id.toString()}
+                keyExtractor={(item, index) => `${item.movie_id}-${index}`} // Added index as fallback
               />
               <Text className="text-lg text-white font-bold mt-5 mb-3">
                 Latest Movies
               </Text>
               <FlatList
                 data={movies}
-                renderItem={({ item }) => <MovieCard {...item} />}
-                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item, index }) => <MovieCard {...item} />}
+                keyExtractor={(item, index) => `${item.id}-${index}`} // Added index as fallback
                 numColumns={3}
                 columnWrapperStyle={{
                   justifyContent: "flex-start",
@@ -117,7 +118,7 @@ export default function Index() {
             }}
             activeOpacity={0.8}
           >
-            <Icon name="android-messages" size={18} color="white" />
+            <Icon name="message-outline" size={18} color="white" />
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -1,48 +1,73 @@
-import { Stack } from "expo-router";
+// app/_layout.tsx
+import { Stack, Redirect } from "expo-router";
+import { StatusBar, Text, View } from "react-native";
+import { useAuth } from "../context/AuthContext";
+import { AuthProvider } from "../context/AuthContext";
 import "./globals.css";
-import { StatusBar } from "react-native";
 
 export default function RootLayout() {
   return (
-    <>
-      <StatusBar hidden={true} />
+    <AuthProvider>
+      <StatusBar hidden />
+      <AuthLayout />
+    </AuthProvider>
+  );
+}
 
-      <Stack
-        screenOptions={{
-          // Global header styling
-          headerStyle: {
-            backgroundColor: "#0a0a0f", // Dark navy like your app
-          },
-          headerTintColor: "#e5e7eb", // Light gray for back button and title
-          headerTitleStyle: {
-            fontWeight: "600",
-            fontSize: 18,
-            color: "#e5e7eb",
-          },
-          headerShadowVisible: false, // Remove default shadow
+function AuthLayout() {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false, // 👈 Ye line sab headers hide kar degi
+      }}
+    >
+      {user ? (
+        <>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="movie/[id]" options={{ headerShown: false }} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen
+            name="auth/login"
+            options={{
+              title: "Login",
+              headerStyle: { backgroundColor: "#0a0a0f" },
+              headerTintColor: "#e5e7eb",
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="auth/signup"
+            options={{
+              title: "Sign Up",
+              headerStyle: { backgroundColor: "#0a0a0f" },
+              headerTintColor: "#e5e7eb",
+              headerShown: false,
+            }}
+          />
+          <Redirect href="/auth/login" />
+        </>
+      )}
+      <Stack.Screen
+        name="chat"
+        options={{
+          title: "AI Movie Suggestions",
+          headerStyle: { backgroundColor: "#0a0a0f" },
+          headerTintColor: "#e5e7eb",
+          headerShown: true,
         }}
-      >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="movie/[id]" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="chat"
-          options={{
-            title: "AI Movie Suggestions",
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: "#0a0a0f",
-              borderBottomWidth: 1,
-              borderBottomColor: "#6b46c1", // Purple accent border
-            },
-            headerTintColor: "#e5e7eb",
-            headerTitleStyle: {
-              color: "#e5e7eb",
-              fontWeight: "600",
-              fontSize: 18,
-            },
-          }}
-        />
-      </Stack>
-    </>
+      />
+    </Stack>
   );
 }

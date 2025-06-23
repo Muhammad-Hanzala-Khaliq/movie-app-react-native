@@ -1,5 +1,6 @@
 //track the search made by user
 import { Client, Databases, ID, Query, Account } from "react-native-appwrite";
+import { Snackbar } from "react-native-paper";
 
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID!;
@@ -9,27 +10,56 @@ const client = new Client()
   .setEndpoint("https://fra.cloud.appwrite.io/v1")
   .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!);
 
-type CreateUserAccount = {
-  email: string;
-  password: string;
-  name: string;
-};
-
-type LoginUserAccount = {
-  email: string;
-  password: string;
-};
-
-class AppwriteService {
-  account;
-  constructor() {
-    client
-      .setEndpoint(APPWRITE_ENDPOINT)
-      .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!);
-    this.account = new Account(client);
+export const account = new Account(client);
+export const createUser = async (
+  email: string,
+  password: string,
+  name: string
+) => {
+  try {
+    const user = await account.create(ID.unique(), email, password, name);
+    return user;
+  } catch (error) {
+    throw error;
   }
-}
+};
 
+export const loginUser = async (email: string, password: string) => {
+  try {
+    const session = await account.createEmailPasswordSession(email, password);
+    const user = await account.get();
+    return {
+      userId: user.$id,
+      name: user.name,
+      email: user.email,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCurrentUser = async () => {
+  try {
+    return await account.get();
+  } catch (error) {
+    return null;
+  }
+};
+export const logoutUser = async () => {
+  try {
+    await account.deleteSession("current");
+  } catch (error) {
+    throw error;
+  }
+};
+// Add this new function
+export const checkSession = async () => {
+  try {
+    return await account.get();
+  } catch (error) {
+    return null;
+  }
+};  
 const database = new Databases(client);
 export const updateSearchCount = async (query: string, movie: Movie) => {
   try {

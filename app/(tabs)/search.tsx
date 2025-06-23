@@ -22,14 +22,12 @@ const Search = () => {
     loading,
     error,
     refetch: loadMovies,
-    reset,
   } = useFetch(() => fetchPopularMovies({ query: searchQuery }), false);
   useEffect(() => {
     const timeoutId = setTimeout(async () => {
       if (searchQuery.trim()) {
         await loadMovies();
       } else {
-        reset();
       }
     }, 500);
     return () => clearTimeout(timeoutId);
@@ -47,6 +45,7 @@ const Search = () => {
         resizeMode="cover"
       />
       <FlatList
+        showsVerticalScrollIndicator={false}
         data={movies}
         renderItem={({ item }) => <MovieCard {...item} />}
         keyExtractor={(item) => item.id.toString()}
